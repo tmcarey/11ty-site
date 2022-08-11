@@ -1,15 +1,47 @@
----
-layout: layouts/base.njk
-eleventyNavigation:
-  key: Home
-  order: 1
-title: Thomas Carey
----
-{% set maxPosts = collections.posts.length | min(3) %}
-<h1>Latest {% if maxPosts == 1 %}Post{% else %}{{ maxPosts }} Posts{% endif %}</h1>
-
-{% set postslist = collections.posts | head(-3) %}
-{% set postslistCounter = collections.posts | length %}
-{% include "postslist.njk" %}
-
-<p>More posts can be found in <a href="{{ '/posts/' | url }}">the archive</a>.</p>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Thomas Carey</title>
+    <link rel="stylesheet" href={{"/css/home.css" | url }}>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap" rel="stylesheet">
+    <script type="text/javascript"
+              src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_CHTML"></script>
+  </head>
+  <body>
+    <script src={{"/js/three.js" | url}}></script>
+    <script src={{"/js/cannon.min.js" | url}}></script>
+    <script id="vertexShader" type="x-shader/x-vertex">
+      // vertex shader's code goes here
+      varying vec3 vNormal;
+      void main() {
+          vNormal = (modelViewMatrix * vec4(normal, 0.0)).xyz;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position.x, position.y, position.z, 1.0);
+      }
+    </script>
+    <script id="fragmentShader" type="x-shader/x-fragment">
+      // fragment shader's code goes here
+      uniform sampler2D fullRender;
+      uniform float width;
+      uniform float height;
+      varying vec3 vNormal;
+      void main() {
+          gl_FragColor = texture(fullRender, vec2(gl_FragCoord.x / width, gl_FragCoord.y / height));
+      }
+    </script>
+    <script src="js/sim.js"></script>
+    <div class="instructions">Click and drag to interact.<br /> Scroll to slide and F to Launch objects.</div>
+    <div class="overlay">
+      <h1>Thomas Carey</h1>
+      <div class="lower-overlay">
+        <a href="/about">ABOUT</a>
+        <a href="/blog">PROJECTS</a>
+        <a href="/cv.txt">CV</a>
+      </div>
+      {% set postslist = collections.posts | head(-3) %}
+      {% set postslistCounter = collections.posts | length %}
+      {% include "postslist.njk" %}
+    </div>
+  </body>
+</html>
